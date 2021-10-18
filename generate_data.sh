@@ -18,8 +18,14 @@ mv ./$FILE_NAME ./$1
 cd $1
 
 mkdir input && cp events.bin ./input/events.bin
-mkdir static && cp footprint.bin ./static/footprint.bin && cp items.bin ./input/items.bin && cp vulnerability.bin ./static/vulnerability.bin && cp damage_bin_dict.bin ./static/damage_bin_dict.bin && cp footprint.idx ./static/footprint.idx
+mkdir static
+cp footprint.bin ./static/footprint.bin
+cp items.bin ./input/items.bin
+cp vulnerability.bin ./static/vulnerability.bin
+cp damage_bin_dict.bin ./static/damage_bin_dict.bin
+cp footprint.idx ./static/footprint.idx
 
+# generate csv files
 evetocsv < ./input/events.bin > ./input/events.csv
 footprinttocsv < ./static/footprint.bin > ./static/footprint.csv
 footprinttocsv < ./input/footprint.bin > ./input/footprint.csv

@@ -46,6 +46,11 @@ def generate_data(size: int) -> None:
     path = Path(get_data_path(size=size))
     if not path.is_dir():
         subprocess.call(f"sh ./generate_data.sh {size}", shell=True)
+        compress_bin_files(size=size)
+
+
+def compress_bin_files(size: int) -> None:
+    subprocess.call(f"python ./compress_bin_data.py -c 2 -n {size}", shell=True)
 
 
 def run_the_processes_for_c(size: int) -> float:
