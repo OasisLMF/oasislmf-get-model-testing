@@ -1,12 +1,12 @@
+import argparse
 import json
+import matplotlib.pyplot as plt
 import os
 import subprocess
-from typing import List, Tuple
-from tqdm import tqdm
 from pathlib import Path
+from tqdm import tqdm
+from typing import List, Tuple
 
-
-import matplotlib.pyplot as plt
 
 config_template = {
     "num_vulnerabilities": 50,
@@ -25,7 +25,7 @@ config_template = {
 
 
 def get_data_path(size: int) -> str:
-    return str(os.getcwd()) + "/data/" + str(size) + "_config.json"
+    return str(os.getcwd()) + "/data/" + str(size)
 
 
 def get_config_path(size: int) -> str:
@@ -50,7 +50,7 @@ def generate_data(size: int) -> None:
 
 
 def compress_bin_files(size: int) -> None:
-    subprocess.call(f"python ./compress_bin_data.py -c 2 -n {size}", shell=True)
+    subprocess.call(f"python ./compress_bin_data.py -n {size}", shell=True)
 
 
 def run_the_processes_for_c(size: int) -> float:
@@ -74,6 +74,11 @@ def plot_outcomes():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-r", help="run models on the data", type=bool, default=False)
+    args = parser.parse_args()
+
+    subprocess.call("sh ./setup.sh", shell=True)
     config_sizes = [100, 500, 600, 700, 800, 900, 1000]
 
     write_configs(sizes=config_sizes)
@@ -85,11 +90,15 @@ if __name__ == "__main__":
         input_size = config_sizes[i]
         print(f"preparing data for size {input_size}")
         generate_data(size=input_size)
-    #     print(f"running model for size {input_size}")
-    #     time = run_the_processes_for_c(size=input_size)
-    #     print(f"model finished for size {input_size}")
-    #     size_data.append(input_size)
-    #     time_data.append(time)
-    #
-    # plt.plot(size_data, time_data)
-    # plt.show()
+
+    if args.r is True:
+        for i in tqdm(range(len(config_sizes))):
+            input_size = config_sizes[i]
+            print(f"running model for size {input_size}")
+            time = run_the_processes_for_c(size=input_size)
+            print(f"model finished for size {input_size}")
+            size_data.append(input_size)
+            time_data.append(time)
+
+        plt.plot(size_data, time_data)
+        plt.show()

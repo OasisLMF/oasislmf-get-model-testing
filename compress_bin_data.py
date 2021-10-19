@@ -8,6 +8,8 @@ from contextlib import ExitStack
 from logging import NullHandler
 from numba.typed import Dict
 import zlib
+import json
+import subprocess
 
 
 areaperil_int = np.dtype(os.environ.get('AREAPERIL_TYPE', 'u4'))
@@ -95,16 +97,49 @@ def compress_bin_file(path: str, compression: int) -> None:
         file.write(compressed_data)
 
 
+def compress_bin_file_command(size: int) -> None:
+    with open(f"./configs/{size}_config.json") as file:
+        config_data = json.load(file)
+    intensity_bins: int = config_data["num_intensity_bins"]
+
+    # compress the footprint data
+    subprocess.call(f"footprinttocsv -b ./data/{size}/static/footprint.bin -x ./data/{size}/static/footprint.idx | "
+                    f"footprinttobin -b ./data/{size}/static/fooprint.bin.z -x ./data/{size}/static/footprint.idx.z "
+                    f"-i {intensity_bins}",
+                    shell=True)
+    # compress the vulnerability data
+
+
+def read_in_chunks(file_object, chunk_size=1024):
+    while True:
+        data = file_object.read(chunk_size)
+        if not data:
+            break
+        yield data
+
+
+def stream_decompress(stream):
+    dec = zlib.decompressobj(32 + zlib.MAX_WBITS)
+    for chunk in stream:
+        rv = dec.decompress(chunk)
+        if rv:
+            yield rv
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-c", help="the compression level", type=int)
     parser.add_argument("-n", help="the size of the data", type=int)
     args = parser.parse_args()
 
-    compress_bin_file(f"./data/{args.n}/events.bin", args.c)
-    compress_bin_file(f"./data/{args.n}/input/events.bin", args.c)
-    compress_bin_file(f"./data/{args.n}/static/footprint.bin", args.c)
-    # compress_bin_file("./data/bin700/input/footprint.bin")
-    compress_bin_file(f"./data/{args.n}/static/vulnerability.bin", args.c)
-    compress_bin_file(f"./data/{args.n}/static/damage_bin_dict.bin", args.c)
+    compress_bin_file_command(size=args.n)
 
+    # the commands below compress the binary files using zlib in Python, however, the compress_bin_file_command
+    # function above uses the builtin compression from the oasislmf command line which has the already defined
+    # format. Therefore this is used for now but the others below are commented out at the moment
+
+    # compress_bin_file(f"./data/{args.n}/events.bin", args.c)
+    # compress_bin_file(f"./data/{args.n}/input/events.bin", args.c)
+    # compress_bin_file(f"./data/{args.n}/static/footprint.bin", args.c)
+    # # compress_bin_file("./data/bin700/input/footprint.bin")
+    # compress_bin_file(f"./data/{args.n}/static/vulnerability.bin", args.c)
+    # compress_bin_file(f"./data/{args.n}/static/damage_bin_dict.bin", args.c)
