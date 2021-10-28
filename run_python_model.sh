@@ -19,7 +19,7 @@ cd ./data/$1
 #cd ..
 
 start=`date +%s`
-eve 1 1 | python ./OasisLMF/oasislmf/pytools/getmodel/get_model.py > /dev/null
+eve 1 1 | getpymodel > /dev/null
 end=`date +%s`
 
 RUNTIME=$((end-start))

@@ -85,7 +85,8 @@ if __name__ == "__main__":
     write_configs(sizes=config_sizes)
 
     size_data = []
-    time_data = []
+    c_time_data = []
+    python_time_data = []
 
     for i in tqdm(range(len(config_sizes))):
         input_size = config_sizes[i]
@@ -100,7 +101,10 @@ if __name__ == "__main__":
             time = run_the_processes_for_c(size=input_size)
             print(f"model finished for size {input_size}")
             size_data.append(input_size)
-            time_data.append(time)
+            c_time_data.append(time)
+            time = run_the_processes_for_python(size=input_size)
+            python_time_data.append(time)
 
-        plt.plot(size_data, time_data)
+        plt.plot(size_data, c_time_data, color="red")
+        plt.plot(size_data, python_time_data, color="blue")
         plt.show()
