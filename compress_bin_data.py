@@ -104,7 +104,7 @@ def compress_bin_file_command(size: int) -> None:
 
     # compress the footprint data
     subprocess.call(f"footprinttocsv -b ./data/{size}/static/footprint.bin -x ./data/{size}/static/footprint.idx | "
-                    f"footprinttobin -b ./data/{size}/static/fooprint.bin.z -x ./data/{size}/static/footprint.idx.z "
+                    f"footprinttobin -z -u -b ./data/{size}/static/footprint.bin.z -x ./data/{size}/static/footprint.idx.z "
                     f"-i {intensity_bins}",
                     shell=True)
     # compress the vulnerability data
@@ -124,6 +124,10 @@ def stream_decompress(stream):
         rv = dec.decompress(chunk)
         if rv:
             yield rv
+
+
+def compress_footprint(path: str) -> None:
+    pass
 
 
 if __name__ == "__main__":

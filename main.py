@@ -6,6 +6,7 @@ import subprocess
 from pathlib import Path
 from tqdm import tqdm
 from typing import List, Tuple
+from compress_bin_data import compress_bin_file_command
 
 
 config_template = {
@@ -90,6 +91,7 @@ if __name__ == "__main__":
         input_size = config_sizes[i]
         print(f"preparing data for size {input_size}")
         generate_data(size=input_size)
+        compress_bin_file_command(size=input_size)
 
     if args.r is True:
         for i in tqdm(range(len(config_sizes))):
