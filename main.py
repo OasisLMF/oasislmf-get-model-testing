@@ -108,3 +108,8 @@ if __name__ == "__main__":
         plt.plot(size_data, c_time_data, color="red")
         plt.plot(size_data, python_time_data, color="blue")
         plt.show()
+
+    python_slope = (python_time_data[-1] - python_time_data[0]) / 900
+    c_slope = (c_time_data[-1] - c_time_data[0]) / 900
+    print(f"here is the python slope: {python_slope}")
+    print(f"here is the c slope: {c_slope}")
